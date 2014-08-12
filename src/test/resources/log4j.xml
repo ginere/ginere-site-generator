@@ -1,0 +1,38 @@
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
+		</layout>
+	</appender>
+
+
+
+	<logger name="avem.jdbc.dao">
+		<level value="WARN" />
+	</logger>
+	<logger name="avem.common.util.dao.cache.impl">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="avem.indexer.indexer.IndexerManager">
+		<level value="INFO" />
+	</logger>
+	
+	<logger name="avem.indexer.importer.MultipleFileImporterTest">
+		<level value="WARN" />
+	</logger>
+	<logger name="avem.indexer.sh.instalador.PerfilesImporter">
+		<level value="INFO" />
+	</logger>
+
+
+	<root>
+		<level value="ALL" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</log4j:configuration>
+

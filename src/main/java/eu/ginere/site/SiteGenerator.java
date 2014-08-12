@@ -1,0 +1,362 @@
+package eu.ginere.site;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import eu.ginere.base.util.file.FileUtils;
+import eu.ginere.site.nodes.BinaryNode;
+import eu.ginere.site.nodes.GlobalPropNode;
+import eu.ginere.site.nodes.JavascriptNode;
+import eu.ginere.site.nodes.Node;
+import eu.ginere.site.nodes.ParseableTextNode;
+import eu.ginere.site.nodes.PropNode;
+
+/**
+ * @author ventura
+ *
+ *  -Davem.common.util.properties.GlobalFileProperties.DefaultPath=/Users/ventura/projects/INDEXER/indexer-model-mysql/conf
+ *
+ */
+public class SiteGenerator {
+	
+	static final Logger log = Logger.getLogger(SiteGenerator.class);
+
+	final public File outDir;
+	final public File contentDir;
+	final public File commonDir;
+	final public String charset;
+		
+	public long timeToSleepBetweenIteration = 100; // In millis
+	
+	private final Map<String, File> FILE_CACHE = new Hashtable<String, File>();	
+	private final Map <File,Node> nodeCache=new Hashtable<File,Node>();
+
+	public SiteGenerator(File outDir,File contentDir,File commonDir,String charset){
+		this.outDir=outDir;
+		this.contentDir=contentDir;
+		this.commonDir=commonDir;
+		this.charset=charset;
+
+	}
+
+
+	public void generate(boolean daemon) throws FileNotFoundException{
+		GlobalPropNode root=new GlobalPropNode(this,contentDir);
+		root.checkForUpdates(null);
+
+		while (daemon){
+			long time=System.currentTimeMillis();
+			root.checkForUpdates(null);
+
+			try {
+				Thread.sleep(timeToSleepBetweenIteration);
+			} catch (InterruptedException e) {
+				if (log.isDebugEnabled()){
+					log.debug(e);
+				}
+			}			
+		}
+
+	}
+
+	public File getFileFromFileName(String fileName){
+		if (FILE_CACHE.containsKey(fileName)){
+			return FILE_CACHE.get(fileName);
+		} else {
+			
+			File file=new File(commonDir,fileName);
+			
+			if (!FileUtils.canReadFile(file)){
+				file=new File(contentDir,fileName);
+				if (FileUtils.canReadFile(file)){
+					FILE_CACHE.put(fileName,file);				
+				} else {
+					log.warn("File not found:'"+fileName+"'");
+					return null;
+				}
+			} else {
+				FILE_CACHE.put(fileName,file);				
+			}
+	
+			return file;
+		}
+	}
+
+
+	public Node getFileNode(File file) throws FileNotFoundException {
+		return getFileNode(file, false);
+	}
+
+	public Node getFileNode(File file,boolean isPageFile) throws FileNotFoundException {
+		if (file==null){
+			return null;
+		}
+		
+		if (nodeCache.containsKey(file)){
+			Node ret=nodeCache.get(file);
+
+			return ret;
+		} else {
+			Node node;
+
+			if (file.isDirectory()){
+				node = new GlobalPropNode(this,file);
+			} else if (isABinaryNode(file)){
+				node=new BinaryNode(this,file);
+			} else if (JavascriptNode.isJavascriptNode(file)){
+				node=new JavascriptNode(this,file);
+			} else if (PropNode.isAPropertiesFile(file)){
+				node=new PropNode(this,file,isPageFile);
+			} else {
+				node=new ParseableTextNode(this,file,isPageFile);			
+			}
+
+			nodeCache.put(file, node);
+			
+			return node;
+		}		
+	}
+
+	public void writeFileContent(Node root,String content) {
+		File outFile=new File(getOutpath(root),root.getFileName());
+		try {
+			IOUtils.write(content,new FileOutputStream(outFile),charset);
+			log.info("OK: "+outFile.getAbsoluteFile());
+		}catch (IOException e) {
+			log.error("Writing file: "+outFile.getAbsoluteFile(),e);
+		}
+	}
+
+	/**
+	 * IF the file is ../content/folder1/folder2/index.html, that will retun /folder1/forlder2
+	 * @return
+	 */
+	public String getRelativePath(File file){
+		String relativePath;
+//		if (file==null){
+//			return "";
+//		}
+		if (file.isDirectory()){
+			relativePath=FileUtils.getRelativePath(file, contentDir,null);
+		} else {
+			relativePath=FileUtils.getRelativePath(file.getParentFile(), contentDir,null);
+		}
+		
+		if (relativePath == null){
+			relativePath=FileUtils.getRelativePath(file.getParentFile(), commonDir,null);
+		}
+		return relativePath;
+	}
+
+
+	public File getOutpath(Node node){
+		File src=node.file;
+		
+//		String relativePath=FileUtils.getRelativePath(src.getParentFile(), contentDir);
+		String relativePath=getRelativePath(src);
+		FileUtils.createPath(outDir, relativePath);
+		
+		return new File(outDir,relativePath);
+	}
+
+	public String iterateOverDIRS(Node parent,
+								  Node template,
+								  String relativePath){
+		File dir;
+		
+		if (relativePath!=null){
+
+			
+//			if (relativePath.startsWith("/")){
+			// tratamos todos los paths como absluto
+			// TODO CAMBIARLO
+				dir=new File(contentDir,relativePath);
+				
+				if (!dir.isDirectory()){
+					log.error("While getting the path:'"+relativePath+"' does not exists:"+dir.getAbsolutePath());
+					return "";
+				} else if (!dir.canRead()){
+					log.error("While getting the path:'"+relativePath+"' can not be readed:"+dir.getAbsolutePath());
+					return "";
+				} 
+			
+		} else {
+			dir=parent.getContext().getCurrentDir();
+		}
+		StringBuilder buffer=new StringBuilder();
+		
+		File array[]=dir.listFiles(CanThreadFileFilter.FILTER);
+		FileUtils.sortByName(array);
+		
+		
+		IteratorContext iteratorContext=new IteratorContext(this);
+		for (File file:array){
+			try {				
+
+				// The list already makes the call to canThreatFileOrDir
+				if (file.isDirectory()){
+					GlobalPropNode dirNode= new GlobalPropNode(this,file);
+					if (dirNode!=null){
+						dirNode.getContext().setParent(parent.getContext());
+						iteratorContext.setParent(dirNode.getContext());
+						iteratorContext.iterate();
+						String value=template.getContent(iteratorContext);
+						buffer.append(value);
+					}
+				}
+
+				
+			} catch (FileNotFoundException e) {
+				log.error("File:"+file.getAbsolutePath(),e);
+			}
+			
+		}
+
+		return buffer.toString();
+	}
+
+	public String iterateOverDIR(Node parent,
+								  Node template,
+								  String relativePath){
+		if (relativePath!=null){			
+			// TODO IS /relativePath usee new File(contentDir,relativePath) 
+			// TODO IS relativePath use new File(parent.context.getCurrentDir(),relativePath);
+
+			//			File dir=new File(contentDir,relativePath);
+			File dir=new File(parent.getContext().getCurrentDir(),relativePath);
+				
+			if (!dir.isDirectory()){
+				log.error("While getting the path:'"+relativePath+"' does not exists:"+dir.getAbsolutePath());
+				return "";
+			} else if (!dir.canRead()){
+				log.error("While getting the path:'"+relativePath+"' can not be readed:"+dir.getAbsolutePath());
+				return "";
+			} else {
+				try {				
+					IteratorContext iteratorContext=new IteratorContext(this);
+					GlobalPropNode dirNode= new GlobalPropNode(this,dir);
+					if (dirNode!=null){
+						dirNode.getContext().setParent(parent.getContext());
+						iteratorContext.setParent(dirNode.getContext());
+						iteratorContext.iterate();
+						String value=template.getContent(iteratorContext);
+						return value;
+					}
+				} catch (FileNotFoundException e) {
+					log.error("File:"+dir.getAbsolutePath(),e);
+				}
+				return "";
+			}
+		} else {
+			log.error("relativePath :'"+relativePath+"' can not be null for iterate over DIR.");
+			return "";
+		}
+	}
+
+	
+	public static class CanThreadFileFilter implements FileFilter{
+		
+		public static final CanThreadFileFilter FILTER=new CanThreadFileFilter();
+		
+		private CanThreadFileFilter(){
+			
+		}
+		
+		@Override
+		public boolean accept(File file) {
+			return canThreatFileOrDir(file);
+		}
+		
+	}
+
+	public static final Map<String, String> BINARY_EXTENSIONS = new Hashtable<String, String>();	
+	
+	static {
+		BINARY_EXTENSIONS.put("map","map");
+		BINARY_EXTENSIONS.put("ico","ico");
+		//		BINARY_EXTENSIONS.put("js","js");
+		BINARY_EXTENSIONS.put("css","css");
+		BINARY_EXTENSIONS.put("png","png");
+		BINARY_EXTENSIONS.put("gif","gif");
+		BINARY_EXTENSIONS.put("jpg","jpg");
+		BINARY_EXTENSIONS.put("jpeg","jpeg");
+
+		BINARY_EXTENSIONS.put("webm","webm");
+		BINARY_EXTENSIONS.put("mp4","mp4");
+		BINARY_EXTENSIONS.put("mpeg","mpeg");
+		BINARY_EXTENSIONS.put("mov","mov");
+		BINARY_EXTENSIONS.put("flv","flv");
+		BINARY_EXTENSIONS.put("avi","avi");
+	}
+
+	public static final String HTML = ".html";
+	public static final String PROP = ".prop";
+	public static final String CSS = ".css";
+	public static final String JS = ".js";
+	public static final String MAP = ".map";
+	public static final String TILDE = "~";
+	public static final String DOT = ".";
+
+	public static boolean canThreatFileOrDir(File file) {
+		
+		if (file == null) {
+			return false;
+		} else if (!file.canRead()){
+			return false;
+		} 
+		
+		String fileName=file.getName();
+		
+		if (fileName.startsWith(DOT)){
+			return false;
+		} 
+
+		if (file.isDirectory()){
+			return true;
+		} else {
+			// Normal files			
+			if (fileName.endsWith(TILDE)){
+				return false;
+			} else if (GlobalPropNode.GLOBAL_PROPERTIES_FILE_NAME.equals(fileName)){
+				return false;
+			} else if (fileName.endsWith(HTML)){
+				return true;
+			} else if (fileName.endsWith(PROP)){
+				return true;
+			} else if (fileName.endsWith(CSS)){
+				return true;
+			} else if (fileName.endsWith(JS)){
+				return true;
+			} else if (fileName.endsWith(MAP)){
+				return true;
+			} else if (isABinaryNode(file)){
+				return true;
+			} else {
+				// log.warn("File unknown:'"+fileName+"'");
+				return false;
+			}
+		}
+	}
+
+	static private boolean isABinaryNode(File file) {
+		if (file == null){
+			return false;
+		} else {
+			String fileName=file.getName();
+			String ext=FileUtils.getExtension(fileName);
+						
+			return BINARY_EXTENSIONS.containsKey(ext);
+		}
+	}	
+
+
+
+}

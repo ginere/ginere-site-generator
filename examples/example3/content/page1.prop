@@ -1,0 +1,3 @@
+PAGE_NAME=Page 1
+PAGE_CONTENT={page1-content.html}
+template=template.html
