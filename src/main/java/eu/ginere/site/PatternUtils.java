@@ -49,4 +49,9 @@ public class PatternUtils{
 	public static final Pattern LIST_TOKEN_PATER=Pattern.compile("\\{(DIRS|DIR)(\\[([a-zA-Z0-9_./-]+)\\])?:([a-zA-Z/][a-zA-Z0-9_./-]+)\\}");
 	public static final String DIR = "DIR";
 	public static final String DIRS = "DIRS";
+	
+	// Like |DATE[ddmmYY]|
+	public static final Pattern DATE_TOKEN_PATER=Pattern.compile("\\|DATE\\[([a-zA-Z0-9_]*)\\]\\|");
+
+	
 }
