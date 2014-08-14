@@ -51,7 +51,7 @@ public class PatternUtils{
 	public static final String DIRS = "DIRS";
 	
 	// Like |DATE[ddmmYY]|
-	public static final Pattern DATE_TOKEN_PATER=Pattern.compile("\\|DATE\\[([a-zA-Z0-9_]*)\\]\\|");
+	public static final Pattern DATE_TOKEN_PATER=Pattern.compile("\\|DATE\\[([a-zA-Z0-9:\\- /]*)\\]\\|");
 
 	
 }

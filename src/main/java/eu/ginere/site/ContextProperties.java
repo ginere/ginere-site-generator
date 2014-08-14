@@ -2,6 +2,8 @@ package eu.ginere.site;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
@@ -204,6 +206,7 @@ public class ContextProperties{
 			while (matcher.find()) {
 				// returns the nave of the variable
 				String token=matcher.group(1);
+				
 				// returns the name
 				String value=getValue(token,currentNode);
 				try {
@@ -211,8 +214,81 @@ public class ContextProperties{
 				}catch(IllegalArgumentException e){
 					log.error("For token:"+token+" and value:"+value+"'",e);
 				}
+
 			}
 			matcher.appendTail(buffer);
+			
+//			// then parse the global variables...
+//			matcher = PatternUtils.DATE_TOKEN_PATER.matcher(buffer);
+//			while (matcher.find()) {
+//				// returns the nave of the variable
+//				String format=matcher.group(1);
+////				String format=token.substring(5,token.length()-2);
+//				log.debug("Format:"+format);
+//				
+//				String value;
+//				Date now=new Date();
+//				
+//				if (format == null || "".equals(format)){
+//					value=now.toString();
+//				} else {
+//					try {
+//						SimpleDateFormat sdf=new SimpleDateFormat(format);
+//						value=sdf.format(now);
+//					}catch(Exception e){
+//						value="";
+//						log.error("Format:"+format+" and date:"+now+"'",e);
+//					}
+//				}
+//					
+//				try {
+//					matcher.appendReplacement(buffer, value);
+//				}catch(IllegalArgumentException e){
+//					log.error("For token:"+format+" and value:"+value+"'",e);
+//				}	
+//			}			
+//			matcher.appendTail(buffer);
+			
+			return buffer.toString();
+		}
+	}
+
+	public String parseGlobalVariables(String stringToParse,Node currentNode) {
+		if (stringToParse == null || "".equals(stringToParse)){
+			return "";
+		} else {
+			// then parse the global variables...
+			StringBuffer buffer=new StringBuffer();
+			Matcher matcher = PatternUtils.DATE_TOKEN_PATER.matcher(stringToParse);
+			while (matcher.find()) {
+				// returns the nave of the variable
+				String format=matcher.group(1);
+//					String format=token.substring(5,token.length()-2);
+				log.debug("Format:"+format);
+				
+				String value;
+				Date now=new Date();
+				
+				if (format == null || "".equals(format)){
+					value=now.toString();
+				} else {
+					try {
+						SimpleDateFormat sdf=new SimpleDateFormat(format);
+						value=sdf.format(now);
+					}catch(Exception e){
+						value="";
+						log.error("Format:"+format+" and date:"+now+"'",e);
+					}
+				}
+					
+				try {
+					matcher.appendReplacement(buffer, value);
+				}catch(IllegalArgumentException e){
+					log.error("For token:"+format+" and value:"+value+"'",e);
+				}	
+			}			
+			matcher.appendTail(buffer);
+			
 			return buffer.toString();
 		}
 	}

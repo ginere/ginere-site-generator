@@ -176,6 +176,8 @@ public abstract class Node{
 			
 		// First  parseamos las variables $VARIABLE$
 		stringToParse=context.parseVariables(stringToParse,this);
+		stringToParse=context.parseGlobalVariables(stringToParse,this);
+		
 		/* 
 		   buffer=new StringBuffer();
 		   matcher = VARIABLE_TOKEN_PATER.matcher(stringToParse);
