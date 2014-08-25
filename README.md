@@ -27,19 +27,19 @@ What it is about ?
 When you create a static web site, there is a lot of work that can be
 optimezed, using templates variables and common widges. This tool helps
 you on that.
-This and java program that parses a directory structure and generates
+This a java program that parses a directory structure and generates
 the html sites. It can be also executed as daemon, that means that you
 can modify your flies on the fly and see instatanements the results.
 
 How it works ?
 -----------------------------------
-It use to folders that contains your site content, and another one
-that contains the comon elements: widgets and templates.
+It use two folders, one that contains your site content, and another one
+that contains the common elements: widgets and templates.
 The tool will parcours your content folder and will creating the pages
 ussing the elements from the common folder and filling the variables.
 
 In each folder inside your content folder you can put a properties
-file called "GlobalProperties.prop" inside this file you can define
+in a file called "GlobalProperties.prop" inside this file you can define
 properties that will be used in your code. To get the value of one
 propertie the program will look at the GlobalProperties.prop file of
 the current folder, if that property is not here it look at the
@@ -49,10 +49,11 @@ root.
 Just show me one example ?
 -----------------------------------
 
-Just create two folders content and comman. Inside the content create
+Just create two folders, the content and common folders. Inside the content create
 the index.html file
 
-```<html>
+```
+<html>
 	{widget.html}
   </html>
 ```
@@ -61,7 +62,7 @@ Inside the comman filder create a file called widget.html:
 
 ```
 	Hello wolrd!
-...
+```
 
 
 The result will be:
