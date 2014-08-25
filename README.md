@@ -55,20 +55,22 @@ the index.html file
 ```
 <html>
 	{widget.html}
-  </html>
+</html>
 ```
 
 Inside the comman filder create a file called widget.html:
 
 ```
-	Hello wolrd!
+Hello wolrd!
 ```
 
 
 The result will be:
-...<html>
+```
+<html>
   Hello wolrd!
-</html>...
+</html>
+```
 
 See examples/example1
 
@@ -78,29 +80,30 @@ Let's use variables.
 The default variables for all the files of the folder are defined in a file called GlobalProperties.prop.
 
 Create a GlobalProperties.prop inside the content folder
-...
+```
 VARIABLE_NAME=This is the name of a variable.\nThis is a new Line, \
  but this is in the same line.
-...
+```
 
-....
+Modify your index.html to add the following:
+```
 <html>
   {widget.html}
 </br>
 |VARIABLE_NAME|
 </html>
-...
+```
 
-...
+```
 <html>
   Hello wolrd!
 </br>
 This is the name of a variable.
 This is a new Line, but this is in the same line.
 </html>
-....
+```
 
-...
+```
 <html>
   {widget.html}
 </br>
@@ -108,9 +111,9 @@ This is the second file:
 </br>
 |VARIABLE_NAME|
 </html>
-...
+```
 
-...
+```
 <html>
   Hello wolrd!
 </br>
@@ -119,7 +122,7 @@ This is the second file:
 This is the name of a variable.
 This is a new Line, but this is in the same line.
 </html>
-...
+```
 
 Let's use a real template.
 -------------------------
@@ -127,25 +130,25 @@ Ok the previous example where right but let's make something more usefull. Lets 
 
 Let's create into the new content folder two file:
 page1.prop:
-...
+```
 PAGE_NAME=Page 1
 PAGE_CONTENT={page1-content.html}
 template=template.html
-...
+```
 
 page2.prop:
-...
+```
 PAGE_NAME=Page 2
 PAGE_CONTENT={page2-content.html}
 template=template.html
-...
+```
 
 The two previous files are like the GlobalProperties.prop, that means that they are defining properties. The template propertie means 
 that we are going to create a new page bases on those files ussing template.html as the template and the values of the properties of the 
 template will be replaced by those values.
 And lets create the new GlobalProperties.prop as :
 
-...
+```
 SITE_DESCRIPTION=The site description
 PAGE_NAME=No Name
 ..
@@ -153,7 +156,7 @@ PAGE_NAME=No Name
 
 Lests create a template into the common folder:
 template.html
-...
+```
 <!DOCTYPE html>
 <html lang="|LANG|">
   {head.html}
@@ -162,7 +165,7 @@ template.html
 	{footer.html}
   </body>
 </html>
-...
+```
 
 
 Remarks:
