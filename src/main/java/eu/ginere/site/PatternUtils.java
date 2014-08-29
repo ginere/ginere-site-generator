@@ -46,9 +46,11 @@ public class PatternUtils{
 
 	// DIRS
 	//	public static final Pattern LIST_TOKEN_PATER=Pattern.compile("\\{(DIRS|DIR)(\\[([a-zA-Z/][a-zA-Z0-9_./-]+)\\])?:([a-zA-Z/][a-zA-Z0-9_./-]+)\\}");
-	public static final Pattern LIST_TOKEN_PATER=Pattern.compile("\\{(DIRS|DIR)(\\[([a-zA-Z0-9_./-]+)\\])?:([a-zA-Z/][a-zA-Z0-9_./-]+)\\}");
+	// Ex: {DIRS[/path]:/lib/header.html} or {DIR[/path]:/lib/header.html} ../ this will pply the lib file over the content dir.
+	public static final Pattern LIST_TOKEN_PATER=Pattern.compile("\\{(DIRS|DIR|FILES)(\\[([a-zA-Z0-9_./-]+)\\])?:([a-zA-Z/][a-zA-Z0-9_./-]+)\\}");
 	public static final String DIR = "DIR";
 	public static final String DIRS = "DIRS";
+	public static final String FILES = "FILES";	
 	
 	// Like |DATE[ddmmYY]|
 	public static final Pattern DATE_TOKEN_PATER=Pattern.compile("\\|DATE\\[([a-zA-Z0-9:\\- /]*)\\]\\|");
