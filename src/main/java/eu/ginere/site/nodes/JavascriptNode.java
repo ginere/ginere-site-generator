@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import eu.ginere.base.util.file.FileUtils;
 import eu.ginere.site.ContextProperties;
 import eu.ginere.site.SiteGenerator;
-import eu.ginere.site.template.GoogleCompiler;
 
 /**
  * Nodos para javascript.
@@ -71,7 +70,7 @@ public class JavascriptNode extends Node {
 			// log.info("OK: "+out.getAbsoluteFile());
 			String compilerOptions = context.getValue("JS_COMPILER_OPTIONS",this);
 			try {
-				GoogleCompiler.compile(file, out);
+				GoogleCompiler.compile(file, out,context.getCharSet());
 			}catch (IOException e) {
 				throw new IOException("While compiling in file:"+file+", out file:"+out+" compiler options:"+compilerOptions,e);
 			}

@@ -292,4 +292,8 @@ public class ContextProperties{
 			return buffer.toString();
 		}
 	}
+
+	public String getCharSet() {		
+		return globalContext.charset;
+	}
 }

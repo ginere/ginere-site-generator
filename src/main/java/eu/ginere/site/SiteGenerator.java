@@ -153,6 +153,10 @@ public class SiteGenerator {
 		if (relativePath == null){
 			relativePath=FileUtils.getRelativePath(file.getParentFile(), commonDir,null);
 		}
+		
+		if (relativePath != null){
+			relativePath=relativePath.replace('\\', '/');
+		}
 		return relativePath;
 	}
 
@@ -202,6 +206,7 @@ public class SiteGenerator {
 			try {				
 
 				// The list already makes the call to canThreatFileOrDir
+				// Use iterateOverFILES is the same
 				if (file.isDirectory()){
 					GlobalPropNode dirNode= new GlobalPropNode(this,file);
 					if (dirNode!=null){
@@ -222,6 +227,41 @@ public class SiteGenerator {
 
 		return buffer.toString();
 	}
+
+
+	public String iterateOverFILES(Node parent,
+                                   Node template,
+                                   String relativePath){
+
+		TODO
+        File array[]=getRelativeFiles(relativePath);
+		File array[]=dir.listFiles(CanThreadFileFilter.FILTER);
+		FileUtils.sortByName(array);
+
+		StringBuilder buffer=new StringBuilder();
+		
+		
+		
+		IteratorContext iteratorContext=new IteratorContext(this);
+		for (File file:array){
+			try {				
+				Node node=getFileNode(file);
+				if (node!=null){
+					node.getContext().setParent(parent.getContext());
+					iteratorContext.setParent(node.getContext());
+					iteratorContext.iterate();
+					String value=template.getContent(iteratorContext);
+					buffer.append(value);
+				}
+			} catch (FileNotFoundException e) {
+				log.error("File:"+file.getAbsolutePath(),e);
+			}
+			
+		}
+
+		return buffer.toString();
+	}
+
 
 	public String iterateOverDIR(Node parent,
 								  Node template,
@@ -353,7 +393,11 @@ public class SiteGenerator {
 			String fileName=file.getName();
 			String ext=FileUtils.getExtension(fileName);
 						
-			return BINARY_EXTENSIONS.containsKey(ext);
+            if (ext == null) {
+                ext="";
+            } 
+
+            return BINARY_EXTENSIONS.containsKey(ext);
 		}
 	}	
 

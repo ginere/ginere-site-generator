@@ -151,7 +151,8 @@ And lets create the new GlobalProperties.prop as :
 ```
 SITE_DESCRIPTION=The site description
 PAGE_NAME=No Name
-..
+```
+
 
 
 Lests create a template into the common folder:
@@ -173,6 +174,19 @@ Remarks:
 		- We can put files to be included into the Variables like : PAGE_CONTENT.
 		- We can include files from another file (like in the template.html) and so on.
 
+
+Build in variables :
+------------------
+
+```
+  |DATE[dd/MM/yyy HH:mm]|
+```
+
+* |pagePath|, If the page is like examples\example4\content\folder\page2.html this will return: /content/folder/
+* |pageName|, If the page is examples\example4\content\folder\page2.html, this will return page2.html
+* |filePath|, If the file is like ../content/folder1/folder2/index.html, that will retun /folder1/forlder2. For windows users, file directory separator will be transformed into /
+* |fileName|, If the file is like examples\example4\content\folder\page2.html this will return page2.html.
+* |contextPath|, The same as the page Path
 
 
 Multiple Folders :
@@ -215,7 +229,7 @@ Availables sources and releases:
 
 You can pull it from the central Maven repositories:
 
-```xml
+```
   <groupId>eu.ginere</groupId>
   <artifactId>ginere-site-generator</artifactId>
   <version>1.0.0</version>

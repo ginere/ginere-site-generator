@@ -1,13 +1,13 @@
 package eu.ginere.site.template;
 
-import eu.ginere.site.template.GoogleCompiler;
-
 import java.io.File;
 
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import eu.ginere.site.nodes.GoogleCompiler;
 
 public class GoogleCompilerTest extends TestCase {
 
@@ -24,7 +24,7 @@ public class GoogleCompilerTest extends TestCase {
 
 			File out=new File("src/test/resources/application-compiled.js");
 			
-			GoogleCompiler.compile(in,out);
+			GoogleCompiler.compile(in,out,"UTF-8");
 
 
 			
