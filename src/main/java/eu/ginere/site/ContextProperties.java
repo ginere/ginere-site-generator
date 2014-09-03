@@ -1,6 +1,7 @@
 package eu.ginere.site;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -144,7 +145,7 @@ public class ContextProperties{
 		if (PAGE_PATH.equals(propertyName)){
 			Node pageNode=getPageNode();
 			if (pageNode!=null){
-				return pageNode.getRelativePath();
+				return pageNode.getRelativePath(null);
 			}
 		}
 
@@ -154,11 +155,16 @@ public class ContextProperties{
 
 		
 		if (FILE_PATH.equals(propertyName)){
-			return currentNode.getRelativePath();
+			return currentNode.getRelativePath(null);
 		}
 
 		if (CONTEXT_PATH.equals(propertyName)){
-			return globalContext.getRelativePath(getCurrentDir());
+			try {
+				return globalContext.getRelativePath(getCurrentDir());
+			} catch (FileNotFoundException e) {
+				log.error("Getting context path for:"+getCurrentDir(),e);
+				return null;
+			}
 		}
 
 		if (this.fileProperties != null){
@@ -167,6 +173,8 @@ public class ContextProperties{
 		
 		// The global context properties are only used into the page root nodes
 		if (ret==null && parent!=null){
+			
+			AQUI entra en un bucle recursivo ....
 			ret=parent.getValue(propertyName,currentNode);
 			// el Global no puede devolver null;
 			if (ret==null){

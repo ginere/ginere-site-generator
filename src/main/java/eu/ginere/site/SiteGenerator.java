@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -28,6 +29,8 @@ import eu.ginere.site.nodes.PropNode;
 public class SiteGenerator {
 	
 	static final Logger log = Logger.getLogger(SiteGenerator.class);
+
+	private static final String SLASH = "/";
 
 	final public File outDir;
 	final public File contentDir;
@@ -126,20 +129,26 @@ public class SiteGenerator {
 	}
 
 	public void writeFileContent(Node root,String content) {
-		File outFile=new File(getOutpath(root),root.getFileName());
 		try {
-			IOUtils.write(content,new FileOutputStream(outFile),charset);
-			log.info("OK: "+outFile.getAbsoluteFile());
-		}catch (IOException e) {
-			log.error("Writing file: "+outFile.getAbsoluteFile(),e);
+			File outFile=new File(getOutpath(root),root.getFileName());
+	
+			try {
+				IOUtils.write(content,new FileOutputStream(outFile),charset);
+				log.info("OK: "+outFile.getAbsoluteFile());
+			}catch (IOException e) {
+				log.error("Writing file: "+outFile.getAbsoluteFile(),e);
+			}
+		}catch (FileNotFoundException e) {
+			log.error("No output file for node: "+root+" ",e);
 		}
 	}
 
 	/**
 	 * IF the file is ../content/folder1/folder2/index.html, that will retun /folder1/forlder2
 	 * @return
+	 * @throws FileNotFoundException 
 	 */
-	public String getRelativePath(File file){
+	public String getRelativePath(File file) throws FileNotFoundException{
 		String relativePath;
 //		if (file==null){
 //			return "";
@@ -156,24 +165,31 @@ public class SiteGenerator {
 		
 		if (relativePath != null){
 			relativePath=relativePath.replace('\\', '/');
+			return relativePath;
+		} else {
+			throw new FileNotFoundException("The file:'"+file.getAbsolutePath()+"' is not under the content dir["+contentDir.getAbsolutePath()+"] nor the common dir ["+commonDir.getAbsoluteFile()+"]");
 		}
-		return relativePath;
+		
 	}
 
 
-	public File getOutpath(Node node){
+	public File getOutpath(Node node) throws FileNotFoundException{
 		File src=node.file;
 		
 //		String relativePath=FileUtils.getRelativePath(src.getParentFile(), contentDir);
 		String relativePath=getRelativePath(src);
-		FileUtils.createPath(outDir, relativePath);
 		
+		FileUtils.createPath(outDir, relativePath);
 		return new File(outDir,relativePath);
 	}
 
 	public String iterateOverDIRS(Node parent,
 								  Node template,
 								  String relativePath){
+
+		return iterateOver(parent,template,relativePath, false,true,false);
+		
+		/*
 		File dir;
 		
 		if (relativePath!=null){
@@ -226,14 +242,17 @@ public class SiteGenerator {
 		}
 
 		return buffer.toString();
+		*/
 	}
 
 
 	public String iterateOverFILES(Node parent,
                                    Node template,
-                                   String relativePath){
+                                   String globPattern){
 
-		TODO
+		/*
+		Node array[]=NodeFinder.getResultArray(generator, this.contentDir, globPattern);
+
         File array[]=getRelativeFiles(relativePath);
 		File array[]=dir.listFiles(CanThreadFileFilter.FILTER);
 		FileUtils.sortByName(array);
@@ -260,12 +279,81 @@ public class SiteGenerator {
 		}
 
 		return buffer.toString();
+		*/
+		return iterateOver(parent,template,globPattern, false,false,true);
+	}
+
+	public String iterateOverSymbLink(Node parent,
+									  Node template,
+									  String globPattern){
+		return iterateOver(parent,template,globPattern, true,false,false);
 	}
 
 
+
+	public String iterateOver(Node parent,
+							  Node template,
+							  String relativePath,
+							  boolean dirs,
+							  boolean files,
+							  boolean symLink){
+		File dir;
+
+		if (relativePath == null){			
+			dir=parent.getContext().getCurrentDir();
+		} else  {
+						
+			if (relativePath.startsWith(SLASH)) {
+				dir=new File(contentDir,relativePath) ;
+			} else {
+				dir=new File(parent.getContext().getCurrentDir(),relativePath);
+			}
+
+			if (!dir.isDirectory()){
+				log.error("While getting the path:'"+relativePath+"' does not exists:"+dir.getAbsolutePath());
+				return "";
+			} else if (!dir.canRead()){
+				log.error("While getting the path:'"+relativePath+"' can not be readed:"+dir.getAbsolutePath());
+				return "";
+			} 			
+		}
+
+		File array[]=dir.listFiles(CanThreadFileFilter.FILTER);
+		FileUtils.sortByName(array);
+		StringBuilder buffer=new StringBuilder();
+
+		IteratorContext iteratorContext=new IteratorContext(this);
+		for (File file:array){
+			try {				
+				if ( (symLink && Files.isSymbolicLink(file.toPath())) ||
+					 (dirs && file.isDirectory()) ||
+					 (files && !file.isDirectory()) 
+					 ) {
+
+					Node node=getFileNode(file);
+					if (node!=null){
+						node.getContext().setParent(parent.getContext());
+						iteratorContext.setParent(node.getContext());
+						iteratorContext.iterate();
+						String value=template.getContent(iteratorContext);
+						buffer.append(value);
+					} else {
+						log.warn("Node is null for file:"+file.getAbsolutePath());
+					}					
+					
+				}
+			} catch (FileNotFoundException e) {
+				log.error("File:"+file.getAbsolutePath(),e);
+			}
+
+		}
+		
+		return buffer.toString();
+	}
+
 	public String iterateOverDIR(Node parent,
-								  Node template,
-								  String relativePath){
+								 Node template,
+								 String relativePath){
 		if (relativePath!=null){			
 			// TODO IS /relativePath usee new File(contentDir,relativePath) 
 			// TODO IS relativePath use new File(parent.context.getCurrentDir(),relativePath);

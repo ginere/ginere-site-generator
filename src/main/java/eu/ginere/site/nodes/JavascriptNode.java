@@ -56,9 +56,10 @@ public class JavascriptNode extends Node {
 	/**
 	 * IF the file is ../content/folder1/folder2/index.html, that will retun /folder1/forlder2
 	 * @return
+	 * @throws FileNotFoundException 
 	 */
 	@Override
-	public String getRelativePath(){
+	public String getRelativePath() throws FileNotFoundException{
 		return globalContext.getRelativePath(file);
 	}
 

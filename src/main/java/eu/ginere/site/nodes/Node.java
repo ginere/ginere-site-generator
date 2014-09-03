@@ -48,8 +48,16 @@ public abstract class Node{
 	 * IF the file is ../content/folder1/folder2/index.html, that will retun /folder1/forlder2
 	 * @return
 	 */
-	public abstract String getRelativePath();
+	public abstract String getRelativePath() throws FileNotFoundException;
 	
+	public String getRelativePath(String defaultValue) {
+		try {
+			return getRelativePath();
+		}catch(FileNotFoundException e){
+			log.warn("While getting relative path for node:"+this);
+			return defaultValue;
+		}
+	}
 
 	/**
 	 * Update the the information asociated to this node.

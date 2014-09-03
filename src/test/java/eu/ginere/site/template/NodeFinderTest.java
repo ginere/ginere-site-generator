@@ -37,7 +37,8 @@ public class NodeFinderTest {
 			TestCase.assertTrue(ret.length==1);
 			
 			
-			ret=NodeFinder.getResultArray(generator, new File("."), "**");
+//			ret=NodeFinder.getResultArray(generator, new File("."), "**");
+			ret=NodeFinder.getResultArray(generator, content, "**");
 			
 			
 			
