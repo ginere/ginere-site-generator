@@ -169,7 +169,6 @@ public class SiteGenerator {
 		} else {
 			throw new FileNotFoundException("The file:'"+file.getAbsolutePath()+"' is not under the content dir["+contentDir.getAbsolutePath()+"] nor the common dir ["+commonDir.getAbsoluteFile()+"]");
 		}
-		
 	}
 
 
@@ -350,6 +349,41 @@ public class SiteGenerator {
 		
 		return buffer.toString();
 	}
+
+	/*
+	public String iterateOverFILES(Node parent,
+                                   Node template,
+                                   String relativePath){
+
+		TODO
+        File array[]=getRelativeFiles(relativePath);
+		File array[]=dir.listFiles(CanThreadFileFilter.FILTER);
+		FileUtils.sortByName(array);
+
+		StringBuilder buffer=new StringBuilder();
+		
+		
+		
+		IteratorContext iteratorContext=new IteratorContext(this);
+		for (File file:array){
+			try {				
+				Node node=getFileNode(file);
+				if (node!=null){
+					node.getContext().setParent(parent.getContext());
+					iteratorContext.setParent(node.getContext());
+					iteratorContext.iterate();
+					String value=template.getContent(iteratorContext);
+					buffer.append(value);
+				}
+			} catch (FileNotFoundException e) {
+				log.error("File:"+file.getAbsolutePath(),e);
+			}
+			
+		}
+
+		return buffer.toString();
+	}
+	*/
 
 	public String iterateOverDIR(Node parent,
 								 Node template,
