@@ -15,13 +15,14 @@ import eu.ginere.site.SiteGenerator;
  * 
  * @author ventura
  */
-public class JavascriptNode extends Node {
+public class JavascriptNode extends ParseableTextNode {
 
 	static final Logger log = Logger.getLogger(JavascriptNode.class);
 
 	private final File out;
 
-	public JavascriptNode(SiteGenerator globalContext,File file) throws FileNotFoundException {
+	public JavascriptNode(SiteGenerator globalContext,
+                          File file) throws FileNotFoundException {
 		super(globalContext,file, true);
 		this.context = new ContextProperties(globalContext);
 
@@ -43,25 +44,25 @@ public class JavascriptNode extends Node {
 		}
 	}
 
-	@Override
-	public long getLastModified() {
-		return file.lastModified();
-	}
-
-	@Override
-	public String getFileName() {
-		return file.getName();
-	}
+//	@Override
+//	public long getLastModified() {
+//		return file.lastModified();
+//	}
+//
+//	@Override
+//	public String getFileName() {
+//		return file.getName();
+//	}
 	
-	/**
-	 * IF the file is ../content/folder1/folder2/index.html, that will retun /folder1/forlder2
-	 * @return
-	 * @throws FileNotFoundException 
-	 */
-	@Override
-	public String getRelativePath() throws FileNotFoundException{
-		return globalContext.getRelativePath(file);
-	}
+//	/**
+//	 * IF the file is ../content/folder1/folder2/index.html, that will retun /folder1/forlder2
+//	 * @return
+//	 * @throws FileNotFoundException 
+//	 */
+//	@Override
+//	public String getRelativePath() throws FileNotFoundException{
+//		return globalContext.getRelativePath(file);
+//	}
 
 	@Override
 	public void generateOrUpdateDiskFile(ContextProperties context) throws IOException {

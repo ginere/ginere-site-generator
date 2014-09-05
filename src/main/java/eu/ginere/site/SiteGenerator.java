@@ -186,7 +186,7 @@ public class SiteGenerator {
 								  Node template,
 								  String relativePath){
 
-		return iterateOver(parent,template,relativePath, false,true,false);
+		return iterateOver(parent,template,relativePath, true,false);
 		
 		/*
 		File dir;
@@ -245,47 +245,47 @@ public class SiteGenerator {
 	}
 
 
-	public String iterateOverFILES(Node parent,
-                                   Node template,
-                                   String globPattern){
-
-		/*
-		Node array[]=NodeFinder.getResultArray(generator, this.contentDir, globPattern);
-
-        File array[]=getRelativeFiles(relativePath);
-		File array[]=dir.listFiles(CanThreadFileFilter.FILTER);
-		FileUtils.sortByName(array);
-
-		StringBuilder buffer=new StringBuilder();
-		
-		
-		
-		IteratorContext iteratorContext=new IteratorContext(this);
-		for (File file:array){
-			try {				
-				Node node=getFileNode(file);
-				if (node!=null){
-					node.getContext().setParent(parent.getContext());
-					iteratorContext.setParent(node.getContext());
-					iteratorContext.iterate();
-					String value=template.getContent(iteratorContext);
-					buffer.append(value);
-				}
-			} catch (FileNotFoundException e) {
-				log.error("File:"+file.getAbsolutePath(),e);
-			}
-			
-		}
-
-		return buffer.toString();
-		*/
-		return iterateOver(parent,template,globPattern, false,false,true);
-	}
+//	public String iterateOverFILES(Node parent,
+//                                   Node template,
+//                                   String globPattern){
+//
+//		/*
+//		Node array[]=NodeFinder.getResultArray(generator, this.contentDir, globPattern);
+//
+//        File array[]=getRelativeFiles(relativePath);
+//		File array[]=dir.listFiles(CanThreadFileFilter.FILTER);
+//		FileUtils.sortByName(array);
+//
+//		StringBuilder buffer=new StringBuilder();
+//		
+//		
+//		
+//		IteratorContext iteratorContext=new IteratorContext(this);
+//		for (File file:array){
+//			try {				
+//				Node node=getFileNode(file);
+//				if (node!=null){
+//					node.getContext().setParent(parent.getContext());
+//					iteratorContext.setParent(node.getContext());
+//					iteratorContext.iterate();
+//					String value=template.getContent(iteratorContext);
+//					buffer.append(value);
+//				}
+//			} catch (FileNotFoundException e) {
+//				log.error("File:"+file.getAbsolutePath(),e);
+//			}
+//			
+//		}
+//
+//		return buffer.toString();
+//		*/
+//		return iterateOver(parent,template,globPattern, false,false,true);
+//	}
 
 	public String iterateOverSymbLink(Node parent,
 									  Node template,
 									  String globPattern){
-		return iterateOver(parent,template,globPattern, true,false,false);
+		return iterateOver(parent,template,globPattern, false,true);
 	}
 
 
@@ -294,7 +294,7 @@ public class SiteGenerator {
 							  Node template,
 							  String relativePath,
 							  boolean dirs,
-							  boolean files,
+//							  boolean files, Not implemented take care to hace the same parent as the child
 							  boolean symLink){
 		File dir;
 
@@ -324,9 +324,9 @@ public class SiteGenerator {
 		IteratorContext iteratorContext=new IteratorContext(this);
 		for (File file:array){
 			try {				
-				if ( (symLink && Files.isSymbolicLink(file.toPath())) ||
-					 (dirs && file.isDirectory()) ||
-					 (files && !file.isDirectory()) 
+				if ( (symLink && Files.isSymbolicLink(file.toPath())) 
+					 || (dirs && file.isDirectory() && !Files.isSymbolicLink(file.toPath()) ) 
+//					 || (files && !file.isDirectory()) 
 					 ) {
 
 					Node node=getFileNode(file);

@@ -25,7 +25,7 @@ public class Main {
 		log.info("Process started at:"+new Date());
 		
 		if (args.length<3){
-			exitError("Arga: content_folder common_folder out_folder [daemon true/false [charset] ]");
+			exitError("Args: content_folder common_folder out_folder [daemon true/false [charset] ]");
 		}
 		
 		File contentDir=new File(args[0]);

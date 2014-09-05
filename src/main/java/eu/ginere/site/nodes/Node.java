@@ -246,8 +246,8 @@ public abstract class Node{
 					value=globalContext.iterateOverDIRS(this,template,relativePath/*,matcher,buffer,list*/);
 				} else if (PatternUtils.DIR.equals(listType)) {
 					value=globalContext.iterateOverDIR(this,template,relativePath/*,matcher,buffer,list*/);
-				} else if (PatternUtils.FILES.equals(listType)) {
-					value=globalContext.iterateOverFILES(this,template,relativePath/*,matcher,buffer,list*/);
+				} else if (PatternUtils.LINKS.equals(listType)) {
+					value=globalContext.iterateOverSymbLink(this,template,relativePath/*,matcher,buffer,list*/);
 				} else {
 					log.error("Dir command:["+listType+"] unkown.");
 					value="";

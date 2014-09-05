@@ -174,7 +174,8 @@ public class ContextProperties{
 		// The global context properties are only used into the page root nodes
 		if (ret==null && parent!=null){
 			
-			AQUI entra en un bucle recursivo ....
+//			TODO
+//			AQUI entra en un bucle recursivo ....
 			ret=parent.getValue(propertyName,currentNode);
 			// el Global no puede devolver null;
 			if (ret==null){
