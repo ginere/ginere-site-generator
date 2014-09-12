@@ -214,8 +214,9 @@ public abstract class Node{
 				if (child!=null) {
 					addChild(child);
 					String value=child.getContent(this.context);
-					try {
-						matcher.appendReplacement(buffer, value);
+
+					try {						
+						matcher.appendReplacement(buffer, Matcher.quoteReplacement(value));
 					}catch(IllegalArgumentException e){
 						log.error("For token:"+token+" and value:"+value,e);		
 					}
@@ -253,7 +254,7 @@ public abstract class Node{
 					value="";
 				}
 				try {
-					matcher.appendReplacement(buffer, value);
+					matcher.appendReplacement(buffer, Matcher.quoteReplacement(value));
 				}catch(IllegalArgumentException e){
 					log.error("For templateName:"+templateName+" and value:"+value,e);		
 				}

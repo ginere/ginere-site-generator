@@ -503,7 +503,7 @@ public class SiteGenerator {
 				return true;
 			} else {
 				// log.warn("File unknown:'"+fileName+"'");
-				return false;
+				return true;
 			}
 		}
 	}
