@@ -8,7 +8,6 @@
 
 	<name>Ginere Site Generator</name>
 	<description>Ginere static site generation from templates</description>
-
 	<url>http://ginere.eu</url>
 	<inceptionYear>2014</inceptionYear>
 
@@ -45,6 +44,7 @@
 		<developerConnection>scm:git:https://github.com/ginere/ginere-site-generator</developerConnection>
 
 		<url>https://github.com/ginere/ginere-site-generator</url>
+		<tag>HEAD</tag>
 	</scm>
 
 	<organization>
@@ -52,18 +52,12 @@
 		<url>http://ginere.eu</url>
 	</organization>
 
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://localhost:9999/</url>
-	</ciManagement>
-
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<plugins>
 
 		  <plugin>
 			<artifactId>maven-compiler-plugin</artifactId>
-			<version>2.0.2</version>
 			<configuration>
 			  <source>1.7</source>
 			  <target>1.7</target>
@@ -130,7 +124,7 @@
 						<addClasspath>true</addClasspath>
 					</manifest>
 					<manifestEntries>
-					  <Created-By>Ginere</Created-By>
+					  <Created-By>Ginere.eu</Created-By>
 					  <Main-Class>eu.ginere.site.Main</Main-Class>
 					  <Specification-Version>${project.version}</Specification-Version>
 					  <Implementation-Version>${project.version}</Implementation-Version>
@@ -169,8 +163,11 @@
 	<properties>
 		<maven.test.skip>false</maven.test.skip>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<junit.version>4.5</junit.version>
+
+		<!-- GINERE -->
 		<ginere-base.version>1.2.0</ginere-base.version>
 
 	</properties>
