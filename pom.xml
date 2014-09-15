@@ -171,7 +171,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<junit.version>4.5</junit.version>
-		<ginere-base.version>1.0.2-SNAPSHOT</ginere-base.version>
+		<ginere-base.version>1.2.0</ginere-base.version>
 
 	</properties>
 </project>
