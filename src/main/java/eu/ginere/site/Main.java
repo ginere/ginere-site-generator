@@ -3,6 +3,7 @@ package eu.ginere.site;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.ginere.base.util.file.FileUtils;
@@ -29,7 +30,8 @@ public class Main {
 		}
 		
 		File contentDir=new File(args[0]);
-		File commanDir=new File(args[1]);
+		//		File commanDir=new File(args[1]);
+		String commanDirs=args[1];
 		File outDir=new File(args[2]);
 
 		// Optional args
@@ -61,12 +63,13 @@ public class Main {
 			exitError("Content dir:"+contentDir.getAbsolutePath());
 		}
 
-		if (! FileUtils.verifyReadDir(commanDir,log)){
-			exitError("Common dir:"+commanDir.getAbsolutePath());
-		}
+//		if (! FileUtils.verifyReadDir(commanDir,log)){
+//			exitError("Common dir:"+commanDir.getAbsolutePath());
+//		}
 
 		try {
-			SiteGenerator template=new SiteGenerator(outDir,contentDir,commanDir,charset);
+			File commonArray[]=getArray(commanDirs);
+			SiteGenerator template=new SiteGenerator(outDir,contentDir,commonArray,charset);
 
 			template.generate(daemon);
 			log.info("Process ended OK.");
@@ -85,4 +88,21 @@ public class Main {
 		log.fatal(error);
 		System.exit(1);
 	}
+
+	public static File[] getArray(String paths){
+		String array[]=StringUtils.split(paths, ',');
+		File ret[]=new File[array.length];
+		
+		for (int i=0;i<array.length;i++){
+			File file=new File(array[i]);
+			ret[i]=file;
+			
+			if ( ! FileUtils.verifyReadDir(file,log) ){
+				exitError("Content dir:"+file.getAbsolutePath());
+			}			
+		}
+		
+		return ret;
+	}
+
 }
