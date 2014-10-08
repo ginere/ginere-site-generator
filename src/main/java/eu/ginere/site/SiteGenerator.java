@@ -503,6 +503,13 @@ public class SiteGenerator {
 		BINARY_EXTENSIONS.put("mov","mov");
 		BINARY_EXTENSIONS.put("flv","flv");
 		BINARY_EXTENSIONS.put("avi","avi");
+		
+		// FONTS
+		BINARY_EXTENSIONS.put("otf","otf");
+		BINARY_EXTENSIONS.put("svg","svg");
+		BINARY_EXTENSIONS.put("woff","woff");
+		BINARY_EXTENSIONS.put("eot","eot");
+		BINARY_EXTENSIONS.put("ttf","ttf");				
 	}
 
 	public static final String HTML = ".html";
