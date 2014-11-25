@@ -34,20 +34,39 @@ public class SiteGenerator {
 
 	final public File outDir;
 	final public File contentDir;
-	final public File commonDir;
+	final public File commonDirArray[];
 	final public String charset;
 		
 	public long timeToSleepBetweenIteration = 100; // In millis
 	
 	private final Map<String, File> FILE_CACHE = new Hashtable<String, File>();	
 	private final Map <File,Node> nodeCache=new Hashtable<File,Node>();
+	
+	private final String commonDirArrayString;
 
 	public SiteGenerator(File outDir,File contentDir,File commonDir,String charset){
 		this.outDir=outDir;
 		this.contentDir=contentDir;
-		this.commonDir=commonDir;
+		this.commonDirArray=new File[]{commonDir};
 		this.charset=charset;
 
+		commonDirArrayString=commonDir.getAbsolutePath();
+	}
+
+	public SiteGenerator(File outDir,File contentDir,File commonDir[],String charset){
+		this.outDir=outDir;
+		this.contentDir=contentDir;
+		this.commonDirArray=commonDir;
+		this.charset=charset;
+
+		StringBuilder buffer=new StringBuilder("]");
+		for (File file:commonDir){
+			buffer.append(file.getAbsolutePath());
+			buffer.append(",");
+		}
+		buffer.append("]");
+
+		commonDirArrayString=buffer.toString();
 	}
 
 
@@ -70,14 +89,40 @@ public class SiteGenerator {
 
 	}
 
+	
+	public File getCommonFile(String fileName){
+		for (File file:commonDirArray){
+			File ret=new File(file,fileName);
+			if (FileUtils.canReadFile(ret)){
+				return ret;
+			}			
+		}
+		
+		return null;		
+	}
+
+	public String getCommonRelativePath(File file){
+		File parentFile=file.getParentFile();
+
+		for (File common:commonDirArray){
+			String relativePath=FileUtils.getRelativePath(parentFile, common,null);
+			if (relativePath!=null){
+				return relativePath;
+			}
+		}
+		
+		return null;
+	}
+
 	public File getFileFromFileName(String fileName){
 		if (FILE_CACHE.containsKey(fileName)){
 			return FILE_CACHE.get(fileName);
 		} else {
 			
-			File file=new File(commonDir,fileName);
+//			File file=new File(commonDir,fileName);
+			File file=getCommonFile(fileName);
 			
-			if (!FileUtils.canReadFile(file)){
+			if (file==null || !FileUtils.canReadFile(file)){
 				file=new File(contentDir,fileName);
 				if (FileUtils.canReadFile(file)){
 					FILE_CACHE.put(fileName,file);				
@@ -160,14 +205,15 @@ public class SiteGenerator {
 		}
 		
 		if (relativePath == null){
-			relativePath=FileUtils.getRelativePath(file.getParentFile(), commonDir,null);
+			// relativePath=FileUtils.getRelativePath(file.getParentFile(), commonDir,null);
+			relativePath=getCommonRelativePath(file);
 		}
 		
 		if (relativePath != null){
 			relativePath=relativePath.replace('\\', '/');
 			return relativePath;
 		} else {
-			throw new FileNotFoundException("The file:'"+file.getAbsolutePath()+"' is not under the content dir["+contentDir.getAbsolutePath()+"] nor the common dir ["+commonDir.getAbsoluteFile()+"]");
+			throw new FileNotFoundException("The file:'"+file.getAbsolutePath()+"' is not under the content dir["+contentDir.getAbsolutePath()+"] nor the common dir ["+commonDirArrayString+"]");
 		}
 	}
 
@@ -457,6 +503,13 @@ public class SiteGenerator {
 		BINARY_EXTENSIONS.put("mov","mov");
 		BINARY_EXTENSIONS.put("flv","flv");
 		BINARY_EXTENSIONS.put("avi","avi");
+		
+		// FONTS
+		BINARY_EXTENSIONS.put("otf","otf");
+		BINARY_EXTENSIONS.put("svg","svg");
+		BINARY_EXTENSIONS.put("woff","woff");
+		BINARY_EXTENSIONS.put("eot","eot");
+		BINARY_EXTENSIONS.put("ttf","ttf");				
 	}
 
 	public static final String HTML = ".html";

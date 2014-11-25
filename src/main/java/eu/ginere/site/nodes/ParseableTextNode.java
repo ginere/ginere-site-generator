@@ -55,7 +55,7 @@ public class ParseableTextNode extends Node {
 				return stringToParse;
 			}catch(Throwable e){
 				log.error("While oppening file:"+file+"["+file.getAbsolutePath()+"]",e);
-				return "";
+				return "";				
 			}finally{
 				scanner.close();
 			}

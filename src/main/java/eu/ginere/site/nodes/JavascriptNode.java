@@ -19,6 +19,8 @@ public class JavascriptNode extends ParseableTextNode {
 
 	static final Logger log = Logger.getLogger(JavascriptNode.class);
 
+	private static final String NONE = "none";
+
 	private final File out;
 
 	public JavascriptNode(SiteGenerator globalContext,
@@ -71,10 +73,17 @@ public class JavascriptNode extends ParseableTextNode {
 			// FileUtils.copyFile(file, out);
 			// log.info("OK: "+out.getAbsoluteFile());
 			String compilerOptions = context.getValue("JS_COMPILER_OPTIONS",this);
-			try {
-				GoogleCompiler.compile(file, out,context.getCharSet());
-			}catch (IOException e) {
-				throw new IOException("While compiling in file:"+file+", out file:"+out+" compiler options:"+compilerOptions,e);
+			log.error("COMPILER:OPTIONS:"+compilerOptions);
+			if (NONE.equals(compilerOptions)){
+				// copy file
+				FileUtils.copyFile(file, out);
+				log.info("OK: "+out.getAbsoluteFile());
+			} else {
+				try {
+					GoogleCompiler.compile(file, out,context.getCharSet());
+				}catch (IOException e) {
+					throw new IOException("While compiling in file:"+file+", out file:"+out+" compiler options:"+compilerOptions,e);
+				}
 			}
 		}
 	}
