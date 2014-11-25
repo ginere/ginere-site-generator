@@ -53,6 +53,9 @@ public class ParseableTextNode extends Node {
 				String stringToParse=scanner.useDelimiter("\\Z").next();
 				
 				return stringToParse;
+			}catch(Throwable e){
+				log.error("While oppening file:"+file+"["+file.getAbsolutePath()+"]",e);
+				return "";
 			}finally{
 				scanner.close();
 			}
