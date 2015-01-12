@@ -74,7 +74,7 @@ public class JavascriptNode extends ParseableTextNode {
 			// log.info("OK: "+out.getAbsoluteFile());
 			String compilerOptions = context.getValue("JS_COMPILER_OPTIONS",this);
 			log.error("COMPILER:OPTIONS:"+compilerOptions);
-			if (NONE.equals(compilerOptions)){
+			if (NONE.equals(compilerOptions.toLowerCase())){
 				// copy file
 				FileUtils.copyFile(file, out);
 				log.info("OK: "+out.getAbsoluteFile());
