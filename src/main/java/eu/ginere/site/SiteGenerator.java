@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import eu.ginere.base.util.file.FileUtils;
 import eu.ginere.site.nodes.BinaryNode;
 import eu.ginere.site.nodes.GlobalPropNode;
+import eu.ginere.site.nodes.GoogleCompiler;
 import eu.ginere.site.nodes.JavascriptNode;
 import eu.ginere.site.nodes.Node;
 import eu.ginere.site.nodes.ParseableTextNode;
@@ -33,6 +34,7 @@ public class SiteGenerator {
 	private static final String SLASH = "/";
 
 	final public File outDir;
+	final public File tmpDir;
 	final public File contentDir;
 	final public File commonDirArray[];
 	final public String charset;
@@ -46,15 +48,16 @@ public class SiteGenerator {
 
 	public SiteGenerator(File outDir,File contentDir,File commonDir,String charset){
 		this.outDir=outDir;
+		this.tmpDir=new File(System.getProperty("java.io.tmpdir"));
 		this.contentDir=contentDir;
 		this.commonDirArray=new File[]{commonDir};
 		this.charset=charset;
-
 		commonDirArrayString=commonDir.getAbsolutePath();
 	}
 
 	public SiteGenerator(File outDir,File contentDir,File commonDir[],String charset){
 		this.outDir=outDir;
+		this.tmpDir=new File(System.getProperty("java.io.tmpdir"));
 		this.contentDir=contentDir;
 		this.commonDirArray=commonDir;
 		this.charset=charset;
@@ -175,10 +178,20 @@ public class SiteGenerator {
 
 	public void writeFileContent(Node root,String content) {
 		try {
+			
+			// Parsion javascript files based on extension
 			File outFile=new File(getOutpath(root),root.getFileName());
-	
+			
 			try {
-				IOUtils.write(content,new FileOutputStream(outFile),charset);
+				int level=JavascriptNode.getCompilerLevel(root);
+				if (level>0 && root instanceof PropNode && outFile.getName().toLowerCase().endsWith(JavascriptNode.JAVA_SCRIPT_EXTENSION)){
+					boolean advanced=(level==2);
+					File jsTempFile=getTmpFile(root);
+					IOUtils.write(content,new FileOutputStream(jsTempFile),charset);
+					GoogleCompiler.compile(jsTempFile, outFile, content, advanced);
+				} else {
+					IOUtils.write(content,new FileOutputStream(outFile),charset);
+				}
 				log.info("OK: "+outFile.getAbsoluteFile());
 			}catch (IOException e) {
 				log.error("Writing file: "+outFile.getAbsoluteFile(),e);
@@ -227,6 +240,16 @@ public class SiteGenerator {
 		FileUtils.createPath(outDir, relativePath);
 		return new File(outDir,relativePath);
 	}
+	
+	public File getTmpFile(Node node) throws FileNotFoundException{
+		File src=node.file;
+		
+		String relativePath=getRelativePath(src);
+		
+		FileUtils.createPath(tmpDir, relativePath);
+		return new File(tmpDir,relativePath);
+	}
+
 
 	public String iterateOverDIRS(Node parent,
 								  Node template,
