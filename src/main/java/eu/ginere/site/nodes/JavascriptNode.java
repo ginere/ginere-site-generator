@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import eu.ginere.base.util.file.FileUtils;
@@ -20,6 +21,9 @@ public class JavascriptNode extends ParseableTextNode {
 	static final Logger log = Logger.getLogger(JavascriptNode.class);
 
 	private static final String NONE = "none";
+
+	private static final String ADVANCED = "advanced";
+	public static final String JAVA_SCRIPT_EXTENSION = ".js";
 
 	private final File out;
 
@@ -46,43 +50,42 @@ public class JavascriptNode extends ParseableTextNode {
 		}
 	}
 
-//	@Override
-//	public long getLastModified() {
-//		return file.lastModified();
-//	}
-//
-//	@Override
-//	public String getFileName() {
-//		return file.getName();
-//	}
-	
-//	/**
-//	 * IF the file is ../content/folder1/folder2/index.html, that will retun /folder1/forlder2
-//	 * @return
-//	 * @throws FileNotFoundException 
-//	 */
-//	@Override
-//	public String getRelativePath() throws FileNotFoundException{
-//		return globalContext.getRelativePath(file);
-//	}
 
 	@Override
 	public void generateOrUpdateDiskFile(ContextProperties context) throws IOException {
 		if (out.lastModified() <= file.lastModified()) {
-			// copy file
-			// FileUtils.copyFile(file, out);
-			// log.info("OK: "+out.getAbsoluteFile());
-			String compilerOptions = context.getValue("JS_COMPILER_OPTIONS",this);
-			log.error("COMPILER:OPTIONS:"+compilerOptions);
-			if (NONE.equals(compilerOptions.toLowerCase())){
+
+//			// copy file
+//			// FileUtils.copyFile(file, out);
+//			// log.info("OK: "+out.getAbsoluteFile());
+//			String compilerOptions = context.getValue("JS_COMPILER_OPTIONS",this);
+//			log.error("COMPILER:OPTIONS:"+compilerOptions);
+//			if (NONE.equals(compilerOptions)){
+//				// copy file
+//				FileUtils.copyFile(file, out);
+//				log.info("OK: "+out.getAbsoluteFile());
+//			} else {
+//				boolean advanced=false;
+//				if (ADVANCED.equals(compilerOptions)){
+//					advanced=true;
+//				}
+//				try {
+//					GoogleCompiler.compile(file, out,context.getCharSet(),advanced);
+//				}catch (IOException e) {
+//					throw new IOException("While compiling in file:"+file+", out file:"+out+" compiler options:"+compilerOptions,e);
+//				}
+//			}
+			int level=getCompilerLevel(this);
+			if (level==0){
 				// copy file
 				FileUtils.copyFile(file, out);
 				log.info("OK: "+out.getAbsoluteFile());
 			} else {
+				boolean advanced=(level==2);
 				try {
-					GoogleCompiler.compile(file, out,context.getCharSet());
+					GoogleCompiler.compile(file, out,context.getCharSet(),advanced);
 				}catch (IOException e) {
-					throw new IOException("While compiling in file:"+file+", out file:"+out+" compiler options:"+compilerOptions,e);
+					throw new IOException("While compiling in file:"+file+", out file:"+out+" compiler options:"+level,e);
 				}
 			}
 		}
@@ -103,5 +106,21 @@ public class JavascriptNode extends ParseableTextNode {
 	@Override
 	protected String getStringToParse() {
 		return "";
+	}
+
+	public static int getCompilerLevel(Node node) {
+		String compilerOptions = node.context.getValue("JS_COMPILER_OPTIONS",node);
+		compilerOptions=compilerOptions.toLowerCase();
+		
+		log.error("COMPILER:OPTIONS:"+compilerOptions);
+		if (NONE.equals(compilerOptions)){
+			return 0;
+		} else {
+			if (ADVANCED.equals(compilerOptions)){
+				return 2;
+			} else {
+				return 1;
+			}				
+		}
 	}
 }

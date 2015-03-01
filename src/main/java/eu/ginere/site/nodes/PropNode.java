@@ -26,7 +26,9 @@ public class PropNode extends Node {
 		
 	@Override
 	public String getFileName() {
-		return getHtmlFileNameFromPropFileName(file.getName());
+		String extension=context.getValue("EXTENSION", this);
+          
+		return getHtmlFileNameFromPropFileName(file.getName(),extension);
 	}
 	
 	/**
@@ -76,7 +78,7 @@ public class PropNode extends Node {
 	}	
 
 
-	private static String getHtmlFileNameFromPropFileName(String fileName){
+	private static String getHtmlFileNameFromPropFileName(String fileName,String newExtension){
 		if (fileName==null){
 			return null;
 		} else if (fileName.length()<=SiteGenerator.PROP.length()){
@@ -84,7 +86,11 @@ public class PropNode extends Node {
 		} else {
 			String prefix=fileName.substring(0,fileName.length()-SiteGenerator.PROP.length());
 			
-			return prefix+SiteGenerator.HTML;
+			if (newExtension == null || newExtension.equals("")){
+				return prefix+SiteGenerator.HTML;
+			} else {
+				return prefix+newExtension;
+			}
 		}
 	}
 }

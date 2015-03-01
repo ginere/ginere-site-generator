@@ -24,7 +24,7 @@ public class GoogleCompilerTest extends TestCase {
 
 			File out=new File("src/test/resources/application-compiled.js");
 			
-			GoogleCompiler.compile(in,out,"UTF-8");
+			GoogleCompiler.compile(in,out,"UTF-8",true);
 
 
 			
