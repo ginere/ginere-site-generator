@@ -47,4 +47,34 @@ public class NodeFinderTest {
 			throw e;
 		}
 	}
+	
+//	@Test
+//	public void extensionTest() throws Exception {
+//		try {
+//            Node[] ret;
+//
+//            File file=new File("examples/example1");
+//            File common=new File(file,"common");
+//            File content=new File(file,"content");
+//            File out=new File(file,"out");
+//            File expected=new File(file,"expected");
+//			SiteGenerator generator=new SiteGenerator(out,content,common,CHARSET);
+//
+//			TestCase.assertTrue(FileUtils.verifyReadDir(content,log));
+//			
+//			ret=NodeFinder.getResultArray(generator, content, "**");
+//			
+//			TestCase.assertTrue(ret.length==1);
+//			
+//			
+////			ret=NodeFinder.getResultArray(generator, new File("."), "**");
+//			ret=NodeFinder.getResultArray(generator, content, "**");
+//			
+//			
+//			
+//		} catch (Exception e) {
+//			log.error("", e);
+//			throw e;
+//		}
+//	}
 }

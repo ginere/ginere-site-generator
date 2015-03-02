@@ -91,22 +91,22 @@ public class JavascriptNode extends ParseableTextNode {
 		}
 	}
 
-	@Override
-	protected String updateContent() throws FileNotFoundException {
-		return "";
-	}
-
-	/**
-	 * Use this method to get the string to parse of this node. The list pased
-	 * in param is the list where the childs found must be added
-	 * 
-	 * @param list
-	 * @return
-	 */
-	@Override
-	protected String getStringToParse() {
-		return "";
-	}
+//	@Override
+//	protected String updateContent() throws FileNotFoundException {
+//		return "";
+//	}
+//
+//	/**
+//	 * Use this method to get the string to parse of this node. The list pased
+//	 * in param is the list where the childs found must be added
+//	 * 
+//	 * @param list
+//	 * @return
+//	 */
+//	@Override
+//	protected String getStringToParse() {
+//		return "";
+//	}
 
 	public static int getCompilerLevel(Node node) {
 		String compilerOptions = node.context.getValue("JS_COMPILER_OPTIONS",node);

@@ -186,9 +186,10 @@ public class SiteGenerator {
 				int level=JavascriptNode.getCompilerLevel(root);
 				if (level>0 && root instanceof PropNode && outFile.getName().toLowerCase().endsWith(JavascriptNode.JAVA_SCRIPT_EXTENSION)){
 					boolean advanced=(level==2);
-					File jsTempFile=getTmpFile(root);
+					String fileName=root.getFileName();
+					File jsTempFile=new File(getTmpFile(root),fileName);
 					IOUtils.write(content,new FileOutputStream(jsTempFile),charset);
-					GoogleCompiler.compile(jsTempFile, outFile, content, advanced);
+					GoogleCompiler.compile(jsTempFile, outFile, root.getContext().getCharSet(), advanced);
 				} else {
 					IOUtils.write(content,new FileOutputStream(outFile),charset);
 				}
