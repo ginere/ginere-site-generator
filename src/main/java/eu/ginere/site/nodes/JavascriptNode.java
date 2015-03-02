@@ -52,7 +52,9 @@ public class JavascriptNode extends ParseableTextNode {
 
 
 	@Override
-	public void generateOrUpdateDiskFile(ContextProperties context) throws IOException {
+	public void generateOrUpdateDiskFile(ContextProperties parentContext) throws IOException {
+        this.context.setParent(parentContext);
+                
 		if (out.lastModified() <= file.lastModified()) {
 
 //			// copy file

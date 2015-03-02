@@ -33,6 +33,8 @@ public class GoogleCompiler {
 			CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
 		}
 		
+//		options.setExternExports(true);
+//		options.setExternExportsPath("c:/projects/ginere/ginere-site-generator/examples-extension/example1/content/jquery-1.11.0.js");
 		// To get the complete set of externs, the logic in
 		// CompilerRunner.getDefaultExterns() should be used here.
 //		JSSourceFile extern = JSSourceFile.fromFile(inFile);

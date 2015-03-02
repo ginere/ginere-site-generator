@@ -4,5 +4,4 @@ EXTENSION=.js
 TEMPLATE_JAVA_SCRIPT=\
 {/gs-core.js}\
 gs.core.init('|SERVICES|','|ROOT|','|WHITE|','|JSON|','|EXTERN|');\
-{/gs-agent.js}\
-
+{/gs-agent.js}

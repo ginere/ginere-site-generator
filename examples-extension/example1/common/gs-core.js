@@ -1,6 +1,10 @@
 /**
  * http://blog.barthe.ph/2013/05/21/js-oo-programming/
  */
+var jj=$("pepe").html();
+
+alert(jj);
+
 
 // Namespace
 var gs = gs || {};
